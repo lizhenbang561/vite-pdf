@@ -17,3 +17,7 @@ uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
 npm run dev
 ```
+
+# 国内拉取远程代码
+
+git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 pull --rebase
