@@ -101,12 +101,9 @@ export default function Sample() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') hideSelectionMenu();
     };
-    const onScroll = () => hideSelectionMenu();
     window.addEventListener('keydown', onKey);
-    window.addEventListener('scroll', onScroll, true);
     return () => {
       window.removeEventListener('keydown', onKey);
-      window.removeEventListener('scroll', onScroll, true);
     };
   }, [hideSelectionMenu]);
 
