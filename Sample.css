@@ -55,3 +55,28 @@ body {
   padding: 20px;
   color: white;
 }
+
+.SelectionMenu {
+  transform: translateX(-50%);
+  background-color: #323639;
+  color: white;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  padding: 6px 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.SelectionMenu button {
+  background-color: #525659;
+  color: white;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.SelectionMenu button:hover {
+  background-color: #676b6f;
+}
