@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { pdfjs, Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -44,6 +44,12 @@ export default function Sample() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // 拖动相关的状态
+  const [dragging, setDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null);
+  const [dialogPosition, setDialogPosition] = useState<{ x: number; y: number } | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   const onResize = useCallback<ResizeObserverCallback>((entries) => {
     const [entry] = entries;
 
@@ -71,6 +77,7 @@ export default function Sample() {
   const hideSelectionMenu = useCallback(() => {
     setSelectionText('');
     setMenuPosition(null);
+    setDialogPosition(null);
   }, []);
 
   const onMouseUp = useCallback(() => {
@@ -100,6 +107,7 @@ export default function Sample() {
     setAskOpen(false);
     setAnswer(null);
     setError('');
+    setDialogPosition(null); // 重置对话框位置
   }, [containerRef, hideSelectionMenu]);
 
   useEffect(() => {
@@ -111,6 +119,45 @@ export default function Sample() {
       window.removeEventListener('keydown', onKey);
     };
   }, [hideSelectionMenu]);
+
+  // 处理拖动开始
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dialogRef.current) return;
+
+    const rect = dialogRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+    setDragging(true);
+  };
+
+  // 处理拖动过程
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (dragging && dragOffset) {
+        setDialogPosition({
+          x: e.clientX - dragOffset.x,
+          y: e.clientY - dragOffset.y
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setDragging(false);
+      setDragOffset(null);
+    };
+
+    if (dragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging, dragOffset]);
 
   async function copySelection(): Promise<void> {
     try {
@@ -191,11 +238,30 @@ export default function Sample() {
         )}
         {askOpen && menuPosition && (
           <div
+            ref={dialogRef}
             className="AskDialog"
-            style={{ position: 'fixed', left: menuPosition.x, top: menuPosition.y + 40 }}
-            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              left: dialogPosition ? dialogPosition.x : menuPosition.x,
+              top: dialogPosition ? dialogPosition.y : menuPosition.y + 40,
+              cursor: dragging ? 'grabbing' : 'grab'
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              // 如果点击的不是标题或按钮，则开始拖动
+              if (e.target instanceof HTMLElement) {
+                if (!e.target.closest('.AskDialog__title') &&
+                    !e.target.closest('button') &&
+                    !e.target.closest('textarea') &&
+                    !e.target.closest('.AskDialog__answer')) {
+                  handleDragStart(e);
+                }
+              }
+            }}
           >
-            <div className="AskDialog__title">智能提问</div>
+            <div className="AskDialog__title" style={{ cursor: 'grab' }}>
+              智能提问
+            </div>
             <div className="AskDialog__context">{selectionText}</div>
             <textarea
               className="AskDialog__question"

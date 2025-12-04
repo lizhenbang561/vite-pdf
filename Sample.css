@@ -82,7 +82,6 @@ body {
 }
 
 .AskDialog {
-  transform: translateX(-50%);
   width: min(540px, 90vw);
   background-color: #323639;
   color: white;
