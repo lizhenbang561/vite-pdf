@@ -80,3 +80,55 @@ body {
 .SelectionMenu button:hover {
   background-color: #676b6f;
 }
+
+.AskDialog {
+  transform: translateX(-50%);
+  width: min(540px, 90vw);
+  background-color: #323639;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.AskDialog__title {
+  font-weight: 600;
+}
+
+.AskDialog__context {
+  max-height: 120px;
+  overflow: auto;
+  background-color: #3b3f42;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.AskDialog__question {
+  width: 100%;
+  background-color: #3b3f42;
+  color: white;
+  border: 1px solid #4a4e51;
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-height: 80px;
+}
+
+.AskDialog__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.AskDialog__error {
+  color: #ff8a8a;
+}
+
+.AskDialog__answer {
+  white-space: pre-wrap;
+  background-color: #3b3f42;
+  padding: 8px;
+  border-radius: 6px;
+}

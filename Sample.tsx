@@ -33,6 +33,11 @@ export default function Sample() {
   const [containerWidth, setContainerWidth] = useState<number>();
   const [selectionText, setSelectionText] = useState<string>('');
   const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  const [askOpen, setAskOpen] = useState(false);
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const onResize = useCallback<ResizeObserverCallback>((entries) => {
     const [entry] = entries;
@@ -87,6 +92,9 @@ export default function Sample() {
     const rect = range.getBoundingClientRect();
     setSelectionText(text);
     setMenuPosition({ x: rect.left + rect.width / 2, y: rect.bottom + 8 });
+    setAskOpen(false);
+    setAnswer(null);
+    setError('');
   }, [containerRef, hideSelectionMenu]);
 
   useEffect(() => {
@@ -121,6 +129,32 @@ export default function Sample() {
     hideSelectionMenu();
   }
 
+  async function submitAsk(): Promise<void> {
+    if (!selectionText) {
+      setError('请先选择文本');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ context: selectionText, question }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setError(data.error || '提问失败');
+      } else {
+        setAnswer(data.answer || '');
+      }
+    } catch {
+      setError('网络错误');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="Example">
       <header>
@@ -150,6 +184,29 @@ export default function Sample() {
           >
             <button onClick={copySelection}>复制</button>
             <button onClick={clearSelection}>清除</button>
+            <button onClick={() => setAskOpen(true)}>提问</button>
+          </div>
+        )}
+        {askOpen && menuPosition && (
+          <div
+            className="AskDialog"
+            style={{ position: 'fixed', left: menuPosition.x, top: menuPosition.y + 40 }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="AskDialog__title">智能提问</div>
+            <div className="AskDialog__context">{selectionText}</div>
+            <textarea
+              className="AskDialog__question"
+              placeholder="你的问题（可留空，直接让模型总结选中文本）"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+            />
+            <div className="AskDialog__actions">
+              <button disabled={loading} onClick={submitAsk}>{loading ? '提问中…' : '提交'}</button>
+              <button onClick={() => setAskOpen(false)}>关闭</button>
+            </div>
+            {error && <div className="AskDialog__error">{error}</div>}
+            {answer && <div className="AskDialog__answer">{answer}</div>}
           </div>
         )}
       </div>
