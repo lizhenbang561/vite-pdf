@@ -16,9 +16,13 @@
   "license": "MIT",
   "dependencies": {
     "@wojtekmaj/react-hooks": "^2.0.0",
+    "katex": "^0.16.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-pdf": "latest"
+    "react-markdown": "^10.1.0",
+    "react-pdf": "latest",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",

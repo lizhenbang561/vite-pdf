@@ -131,4 +131,79 @@ body {
   background-color: #3b3f42;
   padding: 8px;
   border-radius: 6px;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.AskDialog__answer :where(h1, h2, h3, h4, h5, h6) {
+  margin: 0.5em 0;
+  color: #e0e0e0;
+}
+
+.AskDialog__answer p {
+  margin: 0.8em 0;
+  line-height: 1.5;
+}
+
+.AskDialog__answer ul,
+.AskDialog__answer ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.AskDialog__answer li {
+  margin: 0.3em 0;
+}
+
+.AskDialog__answer pre {
+  margin: 0.8em 0;
+  padding: 8px;
+  background-color: #2a2d31;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.AskDialog__answer code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.AskDialog__answer pre code {
+  font-size: 1em;
+}
+
+.AskDialog__answer blockquote {
+  margin: 0.8em 0;
+  padding-left: 1em;
+  border-left: 3px solid #676b6f;
+  color: #ccc;
+}
+
+.AskDialog__answer table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8em 0;
+}
+
+.AskDialog__answer th,
+.AskDialog__answer td {
+  border: 1px solid #525659;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.AskDialog__answer th {
+  background-color: #4a4e51;
+}
+
+/* KaTeX 样式覆盖 */
+.AskDialog__answer .katex-display {
+  margin: 0.8em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.AskDialog__answer .katex {
+  font-size: 1.1em;
 }

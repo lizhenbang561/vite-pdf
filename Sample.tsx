@@ -3,6 +3,11 @@ import { useResizeObserver } from '@wojtekmaj/react-hooks';
 import { pdfjs, Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
+import 'katex/dist/katex.min.css'; // 引入 KaTeX 样式
 
 import './Sample.css';
 
@@ -203,7 +208,29 @@ export default function Sample() {
               <button onClick={() => setAskOpen(false)}>关闭</button>
             </div>
             {error && <div className="AskDialog__error">{error}</div>}
-            {answer && <div className="AskDialog__answer">{answer}</div>}
+            {answer && (
+              <div className="AskDialog__answer">
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                  components={{
+                    // 为代码块添加适当的样式
+                    code: ({node, inline, className, children, ...props}) => {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <pre className={className}>
+                          <code {...props}>{children}</code>
+                        </pre>
+                      ) : (
+                        <code className={className} {...props}>{children}</code>
+                      );
+                    }
+                  }}
+                >
+                  {answer}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
         )}
       </div>
